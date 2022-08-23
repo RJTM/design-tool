@@ -2,6 +2,7 @@ import { PrimitiveAtom, useAtom, useAtomValue } from "jotai";
 import { ReactNode, useMemo, useState } from "react";
 import { useDrag } from "react-dnd";
 import {
+  addToSelectionAtom,
   Component as ComponentType,
   ComponentAtom,
   selectComponentAtom,
@@ -20,6 +21,7 @@ export function Component({ componentAtom }: ComponentProps) {
     useMemo(() => selectedComponentCreator(componentAtom), [componentAtom])
   );
   const [, select] = useAtom(selectComponentAtom);
+  const [, addToSelection] = useAtom(addToSelectionAtom);
   const [, ref] = useDrag({
     type: "component",
     item: component,
@@ -34,7 +36,22 @@ export function Component({ componentAtom }: ComponentProps) {
   });
 
   return (
-    <div ref={ref} onClick={() => select(componentAtom)}>
+    <div
+      ref={ref}
+      onClick={(event) => {
+        if (event.ctrlKey || event.metaKey) {
+          addToSelection(componentAtom);
+        } else {
+          select(componentAtom);
+        }
+      }}
+      onMouseDown={(event) => {
+        event.stopPropagation();
+      }}
+      onMouseUp={(event) => {
+        event.stopPropagation();
+      }}
+    >
       <PositionedComponent component={component} selected={selected} />
     </div>
   );
@@ -51,9 +68,6 @@ export function PositionedComponent({
 }: PositionedComponentProps) {
   return (
     <div
-      className={`border-4 ${
-        selected ? "border-red-600" : "border-transparent"
-      }`}
       style={{
         position: "absolute",
         left: component.x,

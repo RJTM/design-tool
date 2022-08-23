@@ -2,13 +2,13 @@ import { PrimitiveAtom, useAtom, useAtomValue } from "jotai";
 import {
   ComponentAtom,
   componentsAtom,
-  selectedComponentAtomAtom,
+  selectedComponentAtomsAtom,
   ShapeComponent,
   TextComponent,
 } from "./state";
 
 export function RightBar() {
-  const componentAtom = useAtomValue(selectedComponentAtomAtom);
+  const [componentAtom] = useAtomValue(selectedComponentAtomsAtom);
 
   return (
     <div className="bg-red-500">
